@@ -1,4 +1,5 @@
 menu "Select fwupd options"
+	depends on PACKAGE_fwupd-libs
 
 config FWUPD_FIRMWARE_PACKAGER
 	bool "firmware packager"
@@ -24,6 +25,24 @@ config FWUPD_CBOR
 	help
 	  Compile fwupd with cbor protocol support
 
+config FWUPD_LZMA
+	bool "LZMA"
+	default n
+	help
+	  Compile fwupd with LZMA support
+
+config FWUPD_CURL
+	bool "curl"
+	default n
+	help
+	  Compile fwupd with curl support
+
+config FWUPD_LIBARCHIVE
+	bool "libarchive"
+	default y
+	help
+	  Compile fwupd with libarchive support
+
 config FWUPD_LIBDRM
 	bool "libdrm"
 	default n
@@ -36,10 +55,10 @@ config FWUPD_PLUGIN_MODEMMANAGER
 	help
 	  Compile fwupd with ModemManager plugin
 
-config FWUPD_PLUGIN_FLASHROM
-	bool "flashrom plugin"
+config FWUPD_PLUGIN_FASTBOOT
+	bool "fastboot plugin"
 	default y
 	help
-	  Compile fwupd with flashrom plugin
+	  Compile fwupd with fastboot plugin
 
 endmenu

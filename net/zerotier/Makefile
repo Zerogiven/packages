@@ -17,7 +17,6 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE.txt
-PKG_CPE_ID:=cpe:/a:zerotier:zerotierone
 
 PKG_ASLR_PIE:=0
 PKG_BUILD_PARALLEL:=1

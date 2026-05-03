@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgpiod
 PKG_VERSION:=2.1.3
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/libs/libgpiod/
@@ -22,8 +22,6 @@ PKG_LICENSE_FILES:=COPYING
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 PYTHON3_PKG_BUILD:=0
-
-PKG_BUILD_DEPENDS:=PACKAGE_python3-gpiod:python-setuptools/host
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
@@ -92,7 +90,7 @@ define Package/python3-gpiod
   SUBMENU:=Python
   TITLE:=Python bindings for libgpiod
   URL:=https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
-  DEPENDS:=+PACKAGE_python3-gpiod:python3-light +libgpiod
+  DEPENDS:=+python3-light +libgpiod
 endef
 
 define Package/python3-gpiod/description

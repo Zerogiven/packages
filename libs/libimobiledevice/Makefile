@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libimobiledevice
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/libimobiledevice/libimobiledevice.git
@@ -19,7 +19,6 @@ PKG_MIRROR_HASH:=47a6e5aea5dedaabcf91b68357fbb1e7a64bf9df22d4c10b13e85002207bcdf
 PKG_MAINTAINER:=Rosen Penev <rosenp@gmail.com>
 PKG_LICENSE:=LGPL-2.1-or-later
 PKG_LICENSE_FILES:=COPYING.LESSER
-PKG_CPE_ID:=cpe:/a:libimobiledevice:libimobiledevice
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
@@ -42,7 +41,7 @@ define Package/libimobiledevice
   $(call Package/libimobiledevice/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libplist +libimobiledevice-glue +libusbmuxd +libopenssl
+  DEPENDS:=+libplist +libimobiledevice-glue +libtatsu +libusbmuxd +libopenssl
   LICENSE:=LGPL-2.1-or-later
   LICENSE_FILES:=COPYING.LESSER
 endef
@@ -55,7 +54,7 @@ define Package/libimobiledevice-utils
   $(call Package/libimobiledevice/Default)
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libimobiledevice +libtatsu
+  DEPENDS:=+libimobiledevice
   LICENSE:=GPL-2.0-or-later
   ICENSE_FILES:=COPYING
 endef

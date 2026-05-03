@@ -1,44 +1,52 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright 2017-2026 MOSSDeF, Stan Grishin (stangri@melmac.ca).
+# Copyright 2017-2025 MOSSDeF, Stan Grishin (stangri@melmac.ca).
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pbr
-PKG_VERSION:=1.2.2
-PKG_RELEASE:=14
+PKG_VERSION:=1.2.1
+PKG_RELEASE:=41
 PKG_LICENSE:=AGPL-3.0-or-later
 PKG_MAINTAINER:=Stan Grishin <stangri@melmac.ca>
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/pbr
+define Package/pbr/default
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Routing and Redirection
-  TITLE:=Policy Based Routing Service with nft/nft set support
-  URL:=https://github.com/mossdef-org/pbr/
+  TITLE:=Policy Based Routing Service
+  URL:=https://github.com/stangri/pbr/
+  DEPENDS:=+ip-full +jshn +jsonfilter +resolveip
+	DEPENDS+=+!BUSYBOX_DEFAULT_AWK:gawk
+	DEPENDS+=+!BUSYBOX_DEFAULT_GREP:grep
+	DEPENDS+=+!BUSYBOX_DEFAULT_SED:sed
+  PROVIDES:=pbr
   PKGARCH:=all
-  DEPENDS:= \
-	+ip-full \
-	+jshn \
-	+jsonfilter \
-	+resolveip \
-	+!BUSYBOX_DEFAULT_AWK:gawk \
-	+!BUSYBOX_DEFAULT_GREP:grep \
-	+!BUSYBOX_DEFAULT_SED:sed \
-	+kmod-nft-core \
-	+kmod-nft-nat \
-	+nftables-json
+endef
+
+define Package/pbr
+$(call Package/pbr/default)
+  TITLE+= with nft/nft set support
+  DEPENDS+=+kmod-nft-core +kmod-nft-nat +nftables-json
+  VARIANT:=nftables
+  DEFAULT_VARIANT:=1
+endef
+
+define Package/pbr/default/description
+  This service enables policy-based routing for WAN interfaces and various VPN tunnels.
 endef
 
 define Package/pbr/description
-  This service enables policy-based routing for WAN interfaces and various VPN tunnels.
+  $(call Package/pbr/default/description)
   This version supports OpenWrt (23.05 and newer) with firewall4/nft.
 endef
 
-define Package/pbr/conffiles
+define Package/pbr/default/conffiles
 /etc/config/pbr
 endef
+
+Package/pbr/conffiles = $(Package/pbr/default/conffiles)
 
 define Build/Configure
 endef
@@ -46,7 +54,7 @@ endef
 define Build/Compile
 endef
 
-define Package/pbr/install
+define Package/pbr/default/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/pbr $(1)/etc/init.d/pbr
 	$(SED) "s|^\(readonly PKG_VERSION\).*|\1='$(PKG_VERSION)-r$(PKG_RELEASE)'|" $(1)/etc/init.d/pbr
@@ -57,10 +65,16 @@ define Package/pbr/install
 	$(INSTALL_DATA) ./files/usr/share/pbr/pbr.user.dnsprefetch $(1)/usr/share/pbr/pbr.user.dnsprefetch
 	$(INSTALL_DATA) ./files/usr/share/pbr/pbr.user.aws $(1)/usr/share/pbr/pbr.user.aws
 	$(INSTALL_DATA) ./files/usr/share/pbr/pbr.user.netflix $(1)/usr/share/pbr/pbr.user.netflix
+	$(INSTALL_DIR) $(1)/usr/share/nftables.d
+	$(CP) ./files/usr/share/nftables.d/* $(1)/usr/share/nftables.d/
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/etc/uci-defaults/90-pbr $(1)/etc/uci-defaults/90-pbr
 	$(INSTALL_BIN) ./files/etc/uci-defaults/91-pbr-nft $(1)/etc/uci-defaults/91-pbr-nft
 	$(INSTALL_BIN) ./files/etc/uci-defaults/99-pbr-version $(1)/etc/uci-defaults/99-pbr-version
+endef
+
+define Package/pbr/install
+$(call Package/pbr/default/install,$(1))
 endef
 
 define Package/pbr/postinst

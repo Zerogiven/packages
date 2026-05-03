@@ -393,7 +393,6 @@ modemmanager_check_state_locked() {
 
 	local unlock_required unlock_retries unlock_retry unlock_lock
 	local unlock_value unlock_match
-	local sim_path
 
 	if [ -z "$pincode" ]; then
 		echo "PIN required"
@@ -435,8 +434,7 @@ modemmanager_check_state_locked() {
 		return 1
 	fi
 
-	sim_path="$(modemmanager_get_field "${modemstatus}" "modem.generic.sim")"
-	mmcli --modem="${device}" -i "${sim_path}" --pin=${pincode} || {
+	mmcli --modem="${device}" -i any --pin=${pincode} || {
 		proto_notify_error "${interface}" MM_PINCODE_WRONG
 		proto_block_restart "${interface}"
 		return 1

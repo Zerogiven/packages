@@ -27,8 +27,7 @@ define Package/python3-et_xmlfile
   URL:=https://bitbucket.org/openpyxl/et_xmlfile
   DEPENDS:= \
 	+python3-light \
-	+python3-lxml \
-	+python3-xml
+	+python3-lxml
 endef
 
 define Package/python3-et_xmlfile/description

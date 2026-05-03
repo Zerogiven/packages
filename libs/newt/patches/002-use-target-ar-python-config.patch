@@ -1,9 +1,9 @@
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -85,12 +85,7 @@ showkey:	showkey.o $(LIBNEWT)
+@@ -84,12 +84,7 @@ showkey:	showkey.o $(LIBNEWT)
+ 
  _snack.$(SOEXT):   snack.c $(LIBNEWTSH)
- ifneq ($(PYTHONVERS),)
- 	@for ver in $(PYTHONVERS); do \
+ 	@[ -n "$(PYTHONVERS)" ] && for ver in $(PYTHONVERS); do \
 -		pyconfig=$$ver-config; \
 -		if ! $$pyconfig --cflags > /dev/null 2>&1 && \
 -				python-config --cflags > /dev/null 2>&1; then \
@@ -13,4 +13,13 @@
 +		pyconfig=$(PYTHON_CONFIG_PATH)/$$ver-config; \
  		mkdir -p $$ver; \
  		PCFLAGS=`$$pyconfig --cflags`; \
- 		PLDFLAGS=`$$pyconfig --ldflags --embed || $$pyconfig --ldflags`; \
+ 		PIFLAGS=`$$pyconfig --includes`; \
+@@ -109,7 +104,7 @@ whiptcl.$(SOEXT): $(WHIPTCLOBJS) $(LIBNE
+ 	$(CC) -shared $(SHCFLAGS) $(LDFLAGS) -o whiptcl.$(SOEXT) $(WHIPTCLOBJS) -L. -lnewt  $(LIBTCL) -lpopt $(LIBS)
+ 
+ $(LIBNEWT): $(LIBOBJS)
+-	ar rv $@ $^
++	$(AR) rv $@ $^
+ 
+ newt.o $(SHAREDDIR)/newt.o: newt.c Makefile
+ 

@@ -1,8 +1,9 @@
 menu "Configuration"
+	depends on PACKAGE_lpac
 
 config LPAC_WITH_PCSC
 	bool "Include APDU PCSC Backend support"
-	default y
+	default n
 	help
 	  Compile LPAC with APDU PCSC Backend support.
 

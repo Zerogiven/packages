@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts
-PKG_VERSION:=2.8.3
-PKG_RELEASE:=3
+PKG_VERSION:=2.8.2
+PKG_RELEASE:=83
 
 PKG_LICENSE:=GPL-2.0
 
@@ -124,27 +124,6 @@ define Package/ddns-scripts-godaddy/description
   Dynamic DNS Client scripts extension for 'godaddy.com API v1'.
 endef
 
-define Package/ddns-scripts-hetzner-cloud
-  $(call Package/ddns-scripts/Default)
-  TITLE:=Extension for hetzner.cloud API
-  DEPENDS:=ddns-scripts +curl
-  PROVIDES:=ddns-scripts_hetzner-cloud
-endef
-
-define Package/ddns-scripts-hetzner-cloud/description
-  Dynamic DNS Client scripts extension for 'hetzner.cloud API'.
-endef
-
-define Package/ddns-scripts-namesilo
-  $(call Package/ddns-scripts/Default)
-  TITLE:=Extension for namesilo.com API v1
-  DEPENDS:=ddns-scripts +curl
-  PROVIDES:=ddns-scripts_namesilo.com-v1
-endef
-
-define Package/ddns-scripts-namesilo/description
-  Dynamic DNS Client scripts extension for 'namesilo.com API v1'.
-endef
 
 define Package/ddns-scripts-digitalocean
   $(call Package/ddns-scripts/Default)
@@ -162,6 +141,22 @@ define Package/ddns-scripts-digitalocean/description
   'option username' the dns record name to update (eg. A-record: <home>.example.com)
   'option param_opt' the id of the dns record to update (check using chrome inspector in the DO dns tab)
   'option password' the api token generated in the DO panel
+endef
+
+define Package/ddns-scripts-ovh
+  $(call Package/ddns-scripts/Default)
+  TITLE:=Extension for OVH Dynhost
+  DEPENDS:=ddns-scripts +curl +openssl-util
+  PROVIDES:=ddns-scripts_ovh-dynhost
+endef
+
+define Package/ddns-scripts-ovh/description
+  Dynamic DNS Client scripts extension for ovh.com DynHost API.
+  The script directly updates a DNS record using the OVH DynHost API.
+  It requires:
+  'option domain' the dns domain to update the record for (eg. A-record: home.<example.com>)
+  'option username' the dynhost user
+  'option password' the dynhost password
 endef
 
 define Package/ddns-scripts-dnspod
@@ -320,17 +315,6 @@ define Package/ddns-scripts-scaleway/description
   'option param_opt' (Optional) The TTL of the RR
 endef
 
-define Package/ddns-scripts-netcup-com
-  $(call Package/ddns-scripts/Default)
-  TITLE:=Extension for netcup.com API
-  DEPENDS:=ddns-scripts +curl
-  PROVIDES:=ddns-scripts_netcup-com
-endef
-
-define Package/ddns-scripts-netcup-com/description
-  Dynamic DNS Client scripts extension for 'netcup.com API'.
-endef
-
 define Package/ddns-scripts-transip
   $(call Package/ddns-scripts/Default)
   TITLE:=Extension for TransIP API
@@ -398,16 +382,6 @@ define Package/ddns-scripts-aliyun/description
 	Dynamic DNS Client scripts extension for aliyun.com API
 endef
 
-define Package/ddns-scripts-servercow
-	$(call Package/ddns-scripts/Default)
-	TITLE:=Extension for Servercow DNS API
-	DEPENDS:=ddns-scripts +curl +openssl-util
-endef
-
-define Package/ddns-scripts-servercow/description
-	Dynamic DNS Client scripts extension for servercow.de API
-endef
-
 define Build/Configure
 endef
 
@@ -448,6 +422,24 @@ define Package/ddns-scripts/install
 		$(1)/etc/uci-defaults/
 endef
 
+define Package/ddns-scripts/postinst
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns enabled
+	/etc/init.d/ddns start
+fi
+exit 0
+endef
+
+define Package/ddns-scripts/prerm
+#!/bin/sh
+if [ -n "$${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns stop
+	/etc/init.d/ddns disable
+fi
+exit 0
+endef
+
 
 define Package/ddns-scripts-services/install
 	$(INSTALL_DIR) $(1)/usr/share/ddns/default
@@ -460,10 +452,8 @@ define Package/ddns-scripts-services/install
 	rm $(1)/usr/share/ddns/default/cloud.google.com-v1.json
 	rm $(1)/usr/share/ddns/default/freedns.42.pl.json
 	rm $(1)/usr/share/ddns/default/godaddy.com-v1.json
-	rm $(1)/usr/share/ddns/default/hetzner.cloud.json
-	rm $(1)/usr/share/ddns/default/namesilo.com-v1.json
-	rm $(1)/usr/share/ddns/default/netcup.com.json
 	rm $(1)/usr/share/ddns/default/digitalocean.com-v2.json
+	rm $(1)/usr/share/ddns/default/ovh.com.json
 	rm $(1)/usr/share/ddns/default/dnspod.cn.json
 	rm $(1)/usr/share/ddns/default/dnspod.cn-v3.json
 	rm $(1)/usr/share/ddns/default/no-ip.com.json
@@ -480,7 +470,6 @@ define Package/ddns-scripts-services/install
 	rm $(1)/usr/share/ddns/default/porkbun.com-v3.json
 	rm $(1)/usr/share/ddns/default/huaweicloud.com.json
 	rm $(1)/usr/share/ddns/default/aliyun.com.json
-	rm $(1)/usr/share/ddns/default/servercow.de.json
 endef
 
 
@@ -587,59 +576,6 @@ fi
 exit 0
 endef
 
-define Package/ddns-scripts-hetzner-cloud/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) ./files/usr/lib/ddns/update_hetzner_cloud.sh \
-		$(1)/usr/lib/ddns
-
-	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/hetzner.cloud.json \
-		$(1)/usr/share/ddns/default
-endef
-
-define Package/ddns-scripts-hetzner-cloud/prerm
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-fi
-exit 0
-endef
-
-define Package/ddns-scripts-namesilo/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) ./files/usr/lib/ddns/update_namesilo_com_v1.sh \
-		$(1)/usr/lib/ddns
-
-	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/namesilo.com-v1.json \
-		$(1)/usr/share/ddns/default
-endef
-
-define Package/ddns-scripts-namesilo/prerm
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-fi
-exit 0
-endef
-
-define Package/ddns-scripts-netcup-com/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) ./files/usr/lib/ddns/update_netcup_com.sh \
-		$(1)/usr/lib/ddns
-
-	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/netcup.com.json \
-		$(1)/usr/share/ddns/default
-endef
-
-define Package/ddns-scripts-netcup-com/prerm
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-fi
-exit 0
-endef
 
 define Package/ddns-scripts-digitalocean/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
@@ -652,6 +588,24 @@ define Package/ddns-scripts-digitalocean/install
 endef
 
 define Package/ddns-scripts-digitalocean/prerm
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns stop
+fi
+exit 0
+endef
+
+define Package/ddns-scripts-ovh/install
+	$(INSTALL_DIR) $(1)/usr/lib/ddns
+	$(INSTALL_BIN) ./files/usr/lib/ddns/update_ovh_com.sh \
+		$(1)/usr/lib/ddns
+
+	$(INSTALL_DIR) $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./files/usr/share/ddns/default/ovh.com.json \
+		$(1)/usr/share/ddns/default
+endef
+
+define Package/ddns-scripts-ovh/prerm
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	/etc/init.d/ddns stop
@@ -961,23 +915,6 @@ fi
 exit 0
 endef
 
-define Package/ddns-scripts-servercow/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) ./files/usr/lib/ddns/update_servercow_de.sh \
-		$(1)/usr/lib/ddns
-
-	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/servercow.de.json \
-		$(1)/usr/share/ddns/default/
-endef
-
-define Package/ddns-scripts-servercow/prerm
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-fi
-exit 0
-endef
 
 $(eval $(call BuildPackage,ddns-scripts))
 $(eval $(call BuildPackage,ddns-scripts-services))
@@ -987,10 +924,8 @@ $(eval $(call BuildPackage,ddns-scripts-cloudflare))
 $(eval $(call BuildPackage,ddns-scripts-gcp))
 $(eval $(call BuildPackage,ddns-scripts-freedns))
 $(eval $(call BuildPackage,ddns-scripts-godaddy))
-$(eval $(call BuildPackage,ddns-scripts-hetzner-cloud))
-$(eval $(call BuildPackage,ddns-scripts-namesilo))
-$(eval $(call BuildPackage,ddns-scripts-netcup-com))
 $(eval $(call BuildPackage,ddns-scripts-digitalocean))
+$(eval $(call BuildPackage,ddns-scripts-ovh))
 $(eval $(call BuildPackage,ddns-scripts-dnspod))
 $(eval $(call BuildPackage,ddns-scripts-dnspod-v3))
 $(eval $(call BuildPackage,ddns-scripts-noip))
@@ -1007,4 +942,3 @@ $(eval $(call BuildPackage,ddns-scripts-one))
 $(eval $(call BuildPackage,ddns-scripts-porkbun))
 $(eval $(call BuildPackage,ddns-scripts-huaweicloud))
 $(eval $(call BuildPackage,ddns-scripts-aliyun))
-$(eval $(call BuildPackage,ddns-scripts-servercow))

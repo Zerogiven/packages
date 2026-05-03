@@ -96,7 +96,7 @@ CONFIGURE_ARGS += \
 
 MAKE_FLAGS += \
 	CFLAGS="$(TARGET_CFLAGS)" \
-	LDFLAGS="$(TARGET_LDFLAGS)"
+	LDFLAGS="$(TARGET_LDLAGS)"
 
 define Package/tar/install
 	$(INSTALL_DIR) $(1)/usr/libexec

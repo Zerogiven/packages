@@ -6,13 +6,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=owut
-PKG_SOURCE_DATE:=2026-04-09
+PKG_SOURCE_DATE:=2025-12-01
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=5d6760b59e4d61c543245acdd96fe8d1f0165a48
+PKG_SOURCE_VERSION:=4482dd097f48615cc862524ef2492ff83d365db5
 PKG_SOURCE_URL:=https://github.com/efahl/owut.git
-PKG_MIRROR_HASH:=f0e64683a9e974f64a3b1d64ede631d803ddd63fe49cefdec70b5fa14d15d251
+PKG_MIRROR_HASH:=c1d8457bd8e6aced9618f2eaaa4671880a0bc1b1a56a634ab5eea33491cc8db4
 
 PKG_MAINTAINER:=Eric Fahlgren <ericfahlgren@gmail.com>
 PKG_LICENSE:=GPL-2.0-only
@@ -29,7 +29,6 @@ define Package/owut
     +ucode +ucode-mod-fs +ucode-mod-ubus \
     +ucode-mod-uci +ucode-mod-uclient +ucode-mod-uloop
   PKGARCH:=all
-  DEFAULT:=y if (BUILDBOT && !SMALL_FLASH)
 endef
 
 define Package/owut/description

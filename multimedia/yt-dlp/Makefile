@@ -1,18 +1,16 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yt-dlp
-PKG_VERSION:=2026.3.17
-PKG_RELEASE:=2
+PKG_VERSION:=2025.12.8
+PKG_RELEASE:=1
 
 PYPI_NAME:=yt-dlp
-PKG_HASH:=ba7aa31d533f1ffccfe70e421596d7ca8ff0bf1398dc6bb658b7d9dec057d2c9
+PKG_HASH:=b773c81bb6b71cb2c111cfb859f453c7a71cf2ef44eff234ff155877184c3e4f
 PYPI_SOURCE_NAME:=yt_dlp
 
 PKG_MAINTAINER:=George Sapkin <george@sapk.in>
 PKG_LICENSE:=Unlicense
-PKG_LICENSE_FILES:=LICENSE THIRD_PARTY_LICENSES.txt
+PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:yt-dlp_project:yt-dlp
 
 PKG_BUILD_DEPENDS:=python-hatchling/host
@@ -32,6 +30,7 @@ define Package/yt-dlp
     +python3-asyncio \
     +python3-codecs \
     +python3-ctypes \
+    +python3-email \
     +python3-logging \
     +python3-openssl \
     +python3-sqlite3 \

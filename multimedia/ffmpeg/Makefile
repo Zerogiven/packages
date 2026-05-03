@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=6.1.4
-PKG_RELEASE:=2
+PKG_VERSION:=6.1.3
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
-PKG_HASH:=a231e3d5742c44b1cdaebfb98ad7b6200d12763e0b6db9e1e2c5891f2c083a18
+PKG_HASH:=bc5f1e4a4d283a6492354684ee1124129c52293bcfc6a9169193539fbece3487
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Ian Leonard <antonlacon@gmail.com>
 
@@ -201,6 +201,7 @@ FFMPEG_AUDIO_PROTOCOLS:= \
 	file http icecast rtp tcp udp
 
 FFMPEG_PATENTED_DECODERS:= \
+	atrac3 \
 	h264 \
 	hevc \
 	vc1 \
@@ -240,8 +241,6 @@ define Package/ffmpeg/Default/description
  FFmpeg licensing / patent issues are complex. It is the responsibility of the
  user to understand any requirements in this regard with its usage. See:
  https://ffmpeg.org/legal.html for further information.
-
- Patented codecs and technologies are available when CONFIG_BUILD_PATENTED=y.
 endef
 
 
@@ -341,7 +340,7 @@ endef
 define Package/libffmpeg-audio-dec/description
 $(call Package/ffmpeg/Default/description)
  .
- This package contains FFmpeg shared libraries for audio decoding.
+ This package contains FFmpeg shared libraries for audio decoding
 endef
 
 
@@ -386,7 +385,7 @@ REAL_CPU_TYPE:=$(call qstrip,$(firstword $(subst +, ,$(CONFIG_CPU_TYPE))))
 REAL_CPU_TYPE:=$(subst octeonplus,octeon+,$(REAL_CPU_TYPE))
 
 FFMPEG_CONFIGURE:= \
-	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC)" \
+	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC) -Wno-error=incompatible-pointer-types" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
 	./configure \
 	--enable-cross-compile \

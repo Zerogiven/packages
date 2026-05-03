@@ -1,4 +1,4 @@
-
+#
 # Copyright (C) 2010-2015 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -9,16 +9,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openvpn
 
-PKG_VERSION:=2.7.1
-PKG_RELEASE:=2
+PKG_VERSION:=2.6.14
+PKG_RELEASE:=4
 
 PKG_SOURCE_URL:=\
 	https://build.openvpn.net/downloads/releases/ \
 	https://swupdate.openvpn.net/community/releases/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=9858477ec2894a8a672974d8650dcb1af2eeffb468981a2b619f0fa387081167
+PKG_HASH:=9eb6a6618352f9e7b771a9d38ae1631b5edfeed6d40233e243e602ddf2195e7a
 
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_MAINTAINER:=
 
 PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
@@ -36,13 +36,8 @@ define Package/openvpn/Default
   URL:=http://openvpn.net
   SUBMENU:=VPN
   MENU:=1
-  DEPENDS:=+kmod-tun \
-	   +libcap-ng \
-	   +OPENVPN_$(1)_ENABLE_LZO:liblzo \
-	   +OPENVPN_$(1)_ENABLE_LZ4:liblz4 \
-	   +OPENVPN_$(1)_ENABLE_IPROUTE2:ip \
-	   +OPENVPN_$(1)_ENABLE_DCO:libnl-genl \
-	   $(3)
+  DEPENDS:=+kmod-tun +libcap-ng +OPENVPN_$(1)_ENABLE_LZO:liblzo +OPENVPN_$(1)_ENABLE_LZ4:liblz4 +OPENVPN_$(1)_ENABLE_IPROUTE2:ip \
+	+OPENVPN_$(1)_ENABLE_DCO:libnl-genl $(3)
   VARIANT:=$(1)
   PROVIDES:=openvpn openvpn-crypto
 endef
@@ -96,61 +91,56 @@ define Build/Configure
 endef
 
 define Package/openvpn-$(BUILD_VARIANT)/conffiles
+/etc/config/openvpn
 /etc/openvpn.user
 endef
 
 define Package/openvpn-$(BUILD_VARIANT)/install
-	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_DIR) \
+		$(1)/usr/sbin \
+		$(1)/usr/share/openvpn \
+		$(1)/etc/init.d \
+		$(1)/etc/config \
+		$(1)/etc/openvpn \
+		$(1)/lib/functions \
+		$(1)/lib/upgrade/keep.d \
+		$(1)/usr/libexec \
+		$(1)/etc/hotplug.d/openvpn
+
 	$(INSTALL_BIN) \
 		$(PKG_INSTALL_DIR)/usr/sbin/openvpn \
 		$(1)/usr/sbin/
 
-	$(INSTALL_DIR) $(1)/lib/netifd/proto
 	$(INSTALL_BIN) \
-		files/lib/netifd/proto/openvpn.sh \
-		$(1)/lib/netifd/proto/
+		files/openvpn.init \
+		$(1)/etc/init.d/openvpn
 
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) \
-		files/etc/uci-defaults/60_openvpn_migrate.sh \
-		$(1)/etc/uci-defaults/
-
-	$(INSTALL_DIR) $(1)/usr/share/openvpn
-	$(INSTALL_DATA) \
-		files/usr/share/openvpn/openvpn.options \
-		$(1)/usr/share/openvpn/
-	$(INSTALL_BIN) \
-		files/usr/share/openvpn/up.uc \
-		files/usr/share/openvpn/down.uc \
-		files/usr/share/openvpn/route-pre-down.uc \
-		files/usr/share/openvpn/route-up.uc \
-		files/usr/share/openvpn/ipchange.uc \
-		files/usr/share/openvpn/client-connect.uc \
-		files/usr/share/openvpn/client-disconnect.uc \
-		files/usr/share/openvpn/client-crresponse.uc \
-		files/usr/share/openvpn/auth-user-pass-verify.uc \
-		files/usr/share/openvpn/tls-verify.uc \
-		$(1)/usr/share/openvpn/
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/keep.d
-	$(INSTALL_DATA) \
-		files/lib/upgrade/keep.d/openvpn \
-		$(1)/lib/upgrade/keep.d/
-
-	$(INSTALL_DIR) $(1)/usr/libexec
 	$(INSTALL_BIN) \
 		files/usr/libexec/openvpn-hotplug \
-		$(1)/usr/libexec/
+		$(1)/usr/libexec/openvpn-hotplug
 
-	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DATA) \
-		files/etc/openvpn.user \
-		$(1)/etc/
+		files/lib/functions/openvpn.sh \
+		$(1)/lib/functions/openvpn.sh
 
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/openvpn
 	$(INSTALL_DATA) \
 		files/etc/hotplug.d/openvpn/01-user \
-		$(1)/etc/hotplug.d/openvpn/
+		$(1)/etc/hotplug.d/openvpn/01-user
+
+	$(INSTALL_DATA) \
+		files/etc/openvpn.user \
+		$(1)/etc/openvpn.user
+
+	$(INSTALL_DATA) \
+		files/openvpn.options \
+		$(1)/usr/share/openvpn/openvpn.options
+
+	$(INSTALL_CONF) files/openvpn.config \
+		$(1)/etc/config/openvpn
+
+	$(INSTALL_DATA) \
+		files/openvpn.upgrade \
+		$(1)/lib/upgrade/keep.d/openvpn
 endef
 
 $(eval $(call BuildPackage,openvpn-openssl))

@@ -6,8 +6,6 @@
 # This is free software, licensed under the GNU General Public License v2.
 #
 
-. /lib/network/config.sh
-
 get_ping_size() {
 	ps=$1
 	case "$ps" in
@@ -84,10 +82,9 @@ watchcat_restart_modemmanager_iface() {
 }
 
 watchcat_restart_network_iface() {
-	local network
-	network="$(find_config "$1")"
-	logger -p daemon.info -t "watchcat[$$]" "Restarting network interface: \"$1\" (network: \"$network\")."
-	ifup "$network"
+	logger -p daemon.info -t "watchcat[$$]" "Restarting network interface: \"$1\"."
+	ip link set "$1" down
+	ip link set "$1" up
 }
 
 watchcat_run_script() {

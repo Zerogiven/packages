@@ -8,16 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-pyasn1-modules
-PKG_VERSION:=0.4.2
-PKG_RELEASE:=1
+PKG_VERSION:=0.2.8
+PKG_RELEASE:=2
 
 PYPI_NAME:=pyasn1-modules
-PYPI_SOURCE_NAME:=pyasn1_modules
-PKG_HASH:=677091de870a80aae844b1ca6134f54652fa2c8c5a52aa396440ac3106e941e6
+PKG_HASH:=905f84c712230b2c592c19470d3ca8d552de726050d1d1716282a1f6146be65e
 
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE.txt
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk

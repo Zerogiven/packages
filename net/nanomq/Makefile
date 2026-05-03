@@ -16,7 +16,6 @@ PKG_MIRROR_HASH:=e7ff50771176f848fe5137bef9c43855b171689fb63b6582c4c4ecaff72b8c8
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Andrew Yong <me@ndoo.sg>
-PKG_CPE_ID:=cpe:/a:emqx:nanomq
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
